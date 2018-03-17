@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using CliUtils;
 
@@ -9,31 +10,71 @@ namespace Queue.Client
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine($"Azure Storage Queue Client{System.Environment.NewLine}");
-            var commandArguments = args.EnsureArguments();
+            Console.WriteLine($"Azure Storage Queue Client{Environment.NewLine}");
+
+            var commandArguments = args.BuildCommandArguments();
 
             if (commandArguments != null)
             {
-                var typeStr = $"Queue.Client.Commands.{commandArguments.Command.UppercaseFirst()}, Queue.Client";
-
-                Object o = Activator.CreateInstance(Type.GetType(typeStr), new object[] { commandArguments.Args });
-                await (o as ICommand).ExecuteAsync();
+                await ExecuteCommand(commandArguments);
             }
             else
             {
-                PrintHelp();
+                PrintGeneralHelp();
             }
         }
 
-        private static void PrintHelp()
+        private static async Task ExecuteCommand(CommandArguments commandArguments)
+        {
+            var command = GetCommand(commandArguments);
+
+            if (commandArguments.CommandHelpRequested)
+            {
+                command.PrintHelp();
+            }
+            else
+            {
+                if (commandArguments.LoopRequested)
+                {
+                    await ExecuteLoop(command, commandArguments.LoopInterval);
+                }
+
+                await command.ExecuteAsync(9);
+            }
+        }
+
+        private static async Task ExecuteLoop(ICommand command, int interval)
+        {
+            int i = 0;
+
+            while (true)
+            {
+                await command.ExecuteAsync(i++);
+                Thread.Sleep(interval);
+            }
+        }
+
+        private static ICommand GetCommand(CommandArguments commandArguments)
+        {
+            var commandName = commandArguments.Command.UppercaseFirst();
+            var commandtype = $"Queue.Client.Commands.{commandName}, Queue.Client";
+
+            var command = Activator.CreateInstance(Type.GetType(commandtype), new object[] { commandArguments.Args });
+            return command as ICommand;
+        }
+
+        private static void PrintGeneralHelp()
         {
             var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            var name = System.AppDomain.CurrentDomain.FriendlyName;
             Console.WriteLine($@"Usage: {assemblyName} command <arguments>
 
 Commands:
 
     Insert: Insert a new message in the queue. Type {assemblyName} insert -h for further details
+
+Arguments (general):
+
+    --l=miliseconds: Execute an infinite loop, with a delay between each command execution
 
 ");
         }

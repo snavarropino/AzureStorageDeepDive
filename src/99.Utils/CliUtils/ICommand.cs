@@ -4,6 +4,7 @@ namespace CliUtils
 {
     public interface ICommand
     {
-        Task ExecuteAsync();
+        Task ExecuteAsync(int i);
+        void PrintHelp();
     }
 }

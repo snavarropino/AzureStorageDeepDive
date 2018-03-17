@@ -1,6 +1,6 @@
 ﻿namespace Queue.Client.Commands
 {
-    internal class InsertData
+    internal class InsertCommandData
     {
         public string Queue { get; set; }
         public string Message { get; set; }

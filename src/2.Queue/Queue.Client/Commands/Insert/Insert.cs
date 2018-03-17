@@ -1,35 +1,28 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CliUtils;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.Extensions.Configuration;
 
 namespace Queue.Client.Commands
 {
     public class Insert : ICommand
     {
-        public object[] Args { get; }
+        private IConfiguration Configuration { get; }
 
         public Insert(object[] args)
         {
-            Args = args;
+            Configuration = new CommandArguments((string[])args).Configuration;
         }
 
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(int i)
         {
-            if (!Args.Any() || (Args.Any() && ((string) Args.First()).IsHelp()))
+            var commandData=ParseArgs();
+            if (commandData.Validate())
             {
-                PrintHelp();
-                return;
-            }
-
-            var data=ParseArgs();
-            if (data.Validate())
-            {
-                await InsertMessageAsync(data);
+                commandData.Message = $"{commandData.Message} {i}";
+                await QueueInsert.InsertMessageAsync(commandData);
+                Console.WriteLine($"Inserted: {commandData.Message}");
             }
             else
             {
@@ -37,50 +30,19 @@ namespace Queue.Client.Commands
             }
         }
 
-        private async Task InsertMessageAsync(InsertData insertData)
+        private InsertCommandData ParseArgs()
         {
-            var storageAccount = GetStorageAccount(insertData);
 
-            // Create the queue client.
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-
-            // Retrieve a reference to a queue.
-            CloudQueue queue = queueClient.GetQueueReference(insertData.Queue);
-
-            // Create the queue if it doesn't already exist.
-            await queue.CreateIfNotExistsAsync();
-
-            // Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage(insertData.Message);
-            await queue.AddMessageAsync(message);
-        }
-
-        private static CloudStorageAccount GetStorageAccount(InsertData insertData)
-        {
-            if (string.IsNullOrWhiteSpace(insertData.StorageAccount))
+            return new InsertCommandData()
             {
-                return CloudStorageAccount.DevelopmentStorageAccount;
-            }
-
-            StorageCredentials storageCredentials = new StorageCredentials(insertData.StorageAccount, insertData.StorageKey);
-            return new CloudStorageAccount(storageCredentials, useHttps: true);
-        }
-
-        private InsertData ParseArgs()
-        {
-            var configuration = new CommandArguments(Args.Cast<string>().ToArray())
-                    .AsConfiguration();
-
-            return new InsertData()
-            {
-                Queue = configuration["Queue"]?? configuration["q"],
-                Message = configuration["Message"] ?? configuration["m"],
-                StorageAccount = configuration["Account"] ?? configuration["a"],
-                StorageKey = configuration["Key"] ?? configuration["k"],
+                Queue = Configuration["Queue"]?? Configuration["q"],
+                Message = Configuration["Message"] ?? Configuration["m"],
+                StorageAccount = Configuration["Account"] ?? Configuration["a"],
+                StorageKey = Configuration["Key"] ?? Configuration["k"],
             };
         }
 
-        private void PrintHelp()
+        public void PrintHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=

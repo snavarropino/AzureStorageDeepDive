@@ -9,10 +9,11 @@ namespace CliUtils
         {
             return str.Equals("help", StringComparison.InvariantCultureIgnoreCase)
                     || str.Equals("-h", StringComparison.InvariantCultureIgnoreCase)
+                   ||  str.Equals("--h", StringComparison.InvariantCultureIgnoreCase)
                     || str.Equals("/?", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static CommandArguments EnsureArguments(this string[] args)
+        public static CommandArguments BuildCommandArguments(this string[] args)
         {
             if (args.Length < 1)
             {
