@@ -1,7 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 
-namespace Queue.Client.Commands
+namespace Queue.Cli.Commands
 {
     internal static class StorageAccountFactory
     {

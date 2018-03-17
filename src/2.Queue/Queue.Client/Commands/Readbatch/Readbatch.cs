@@ -1,54 +1,43 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using CliUtils;
-using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
-namespace Queue.Client.Commands
+namespace Queue.Cli.Commands.Readbatch
 {
-    public class Readbatch : ICommand
+    internal static class ReadBatch
     {
-        private IConfiguration Configuration { get; }
-
-        public Readbatch(object[] args)
+        public static async Task DeQueueMessageAsync(BaseCommandData insertCommandData)
         {
-            Configuration = new CommandArguments((string[])args).Configuration;
-        }
+            var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
-        public async Task ExecuteAsync(int i)
-        {
-            var commandData=ParseArgs();
-            if (commandData.Validate())
-            {
-                await QueueReadBatch.DeQueueMessageAsync(commandData);
-            }
-            else
-            {
-                PrintHelp();
-            }
-        }
+            // Create the queue client.
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-        private BaseCommandData ParseArgs()
-        {
-            return new BaseCommandData()
-            {
-                Queue = Configuration["Queue"]?? Configuration["q"],
-                StorageAccount = Configuration["Account"] ?? Configuration["a"],
-                StorageKey = Configuration["Key"] ?? Configuration["k"],
-            };
-        }
+            // Retrieve a reference to a queue.
+            CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
 
-        public void PrintHelp()
-        {
-            var executable = Assembly.GetExecutingAssembly().GetName().Name;
-            var help=
-$@"Peek: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
-
-    Usage: {executable} {nameof(Dequeue)}  --q=<queue> [--a=<account> -k=<key>]
-
-    If no storage account name and key are provided StorageEmulator will be used";
             
-            Console.WriteLine(help);
+            var options = new QueueRequestOptions()
+            {
+                LocationMode = LocationMode.PrimaryThenSecondary,
+                RetryPolicy = new LinearRetry(),
+                MaximumExecutionTime = TimeSpan.FromSeconds(2),
+                ServerTimeout = TimeSpan.FromSeconds(3)
+            };
+
+            // Read batch
+            var readed = await queue.GetMessagesAsync(5, TimeSpan.FromMinutes(5), options, new OperationContext());
+
+            foreach (CloudQueueMessage retrievedMessage in readed)
+            {
+                Console.WriteLine($"Readed: {retrievedMessage.AsString}");
+                // Process all messages in less than 5 minutes, deleting each message after processing.
+                await queue.DeleteMessageAsync(retrievedMessage);
+                //Do stuff...
+                Console.WriteLine($"Deleted: {retrievedMessage.AsString}");
+            }
         }
     }
 }

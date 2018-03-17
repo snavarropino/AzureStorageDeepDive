@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CliUtils;
 
-namespace Queue.Client
+namespace Queue.Cli
 {
     class Program
     {
@@ -57,7 +57,7 @@ namespace Queue.Client
         private static ICommand GetCommand(CommandArguments commandArguments)
         {
             var commandName = commandArguments.Command.UppercaseFirst();
-            var commandtype = $"Queue.Client.Commands.{commandName}, Queue.Client";
+            var commandtype = $"Queue.Cli.Commands.{commandName}.{commandName}Command, Queue.Cli";
 
             var command = Activator.CreateInstance(Type.GetType(commandtype), new object[] { commandArguments.Args });
             return command as ICommand;

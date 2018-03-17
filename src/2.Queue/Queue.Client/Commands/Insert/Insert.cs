@@ -1,57 +1,42 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using CliUtils;
-using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Queue.Client.Commands
+namespace Queue.Cli.Commands.Insert
 {
-    public class Insert : ICommand
+    internal static class Insert
     {
-        private IConfiguration Configuration { get; }
-
-        public Insert(object[] args)
+        public static async Task InsertMessageAsync(InsertCommandData insertCommandData)
         {
-            Configuration = new CommandArguments((string[])args).Configuration;
+            var storageAccount = GetStorageAccount(insertCommandData);
+
+            // Create the queue client.
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to a queue.
+            CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
+
+            // Create the queue if it doesn't already exist.
+            await queue.CreateIfNotExistsAsync();
+
+            // Create a message and add it to the queue.
+            CloudQueueMessage message = new CloudQueueMessage(insertCommandData.Message);
+            await queue.AddMessageAsync(message);
+
+            Console.WriteLine($"Inserted: {insertCommandData.Message}");
         }
 
-        public async Task ExecuteAsync(int i)
+        private static CloudStorageAccount GetStorageAccount(InsertCommandData insertCommandData)
         {
-            var commandData=ParseArgs();
-            if (commandData.Validate())
+            if (string.IsNullOrWhiteSpace(insertCommandData.StorageAccount))
             {
-                commandData.Message = $"{commandData.Message} {i}";
-                await QueueInsert.InsertMessageAsync(commandData);
+                return CloudStorageAccount.DevelopmentStorageAccount;
             }
-            else
-            {
-                PrintHelp();
-            }
-        }
 
-        private InsertCommandData ParseArgs()
-        {
-
-            return new InsertCommandData()
-            {
-                Queue = Configuration["Queue"]?? Configuration["q"],
-                Message = Configuration["Message"] ?? Configuration["m"],
-                StorageAccount = Configuration["Account"] ?? Configuration["a"],
-                StorageKey = Configuration["Key"] ?? Configuration["k"],
-            };
-        }
-
-        public void PrintHelp()
-        {
-            var executable = Assembly.GetExecutingAssembly().GetName().Name;
-            var help=
-$@"Insert: Insert a message in a queue. 
-
-    Usage: {executable} {nameof(Insert)} --m='<mesage>' --q=<queue> [--a=<account> -k=<key>]
-
-    If no storage account name and key are provided StorageEmulator will be used";
-            
-            Console.WriteLine(help);
+            StorageCredentials storageCredentials = new StorageCredentials(insertCommandData.StorageAccount, insertCommandData.StorageKey);
+            return new CloudStorageAccount(storageCredentials, useHttps: true);
         }
     }
 }

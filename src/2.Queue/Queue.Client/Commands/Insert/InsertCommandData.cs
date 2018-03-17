@@ -1,4 +1,4 @@
-﻿namespace Queue.Client.Commands
+﻿namespace Queue.Cli.Commands.Insert
 {
     internal class InsertCommandData: BaseCommandData
     {

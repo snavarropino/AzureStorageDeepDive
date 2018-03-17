@@ -1,55 +1,24 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using CliUtils;
-using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Queue.Client.Commands
+namespace Queue.Cli.Commands.Read
 {
-    public class Read : ICommand
+    internal static class Read
     {
-        private IConfiguration Configuration { get; }
-
-        public Read(object[] args)
+        public static async Task ReadMessageAsync(BaseCommandData insertCommandData)
         {
-            Configuration = new CommandArguments((string[])args).Configuration;
-        }
+            var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
-        public async Task ExecuteAsync(int i)
-        {
-            var commandData=ParseArgs();
-            if (commandData.Validate())
-            {
-                await QueueRead.ReadMessageAsync(commandData);
-            }
-            else
-            {
-                PrintHelp();
-            }
-        }
+            // Create the queue client.
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-        private BaseCommandData ParseArgs()
-        {
+            // Retrieve a reference to a queue.
+            CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
 
-            return new BaseCommandData()
-            {
-                Queue = Configuration["Queue"]?? Configuration["q"],
-                StorageAccount = Configuration["Account"] ?? Configuration["a"],
-                StorageKey = Configuration["Key"] ?? Configuration["k"],
-            };
-        }
-
-        public void PrintHelp()
-        {
-            var executable = Assembly.GetExecutingAssembly().GetName().Name;
-            var help=
-$@"Peek: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
-
-    Usage: {executable} {nameof(Dequeue)}  --q=<queue> [--a=<account> -k=<key>]
-
-    If no storage account name and key are provided StorageEmulator will be used";
-            
-            Console.WriteLine(help);
+            // Peek
+            var retrievedMessage = await queue.GetMessageAsync();
+            Console.WriteLine($"Readed: {retrievedMessage.AsString}");
         }
     }
 }

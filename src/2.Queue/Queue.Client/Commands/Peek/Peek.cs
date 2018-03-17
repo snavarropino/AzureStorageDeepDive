@@ -1,55 +1,24 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using CliUtils;
-using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace Queue.Client.Commands
+namespace Queue.Cli.Commands.Peek
 {
-    public class Peek : ICommand
+    internal static class Peek
     {
-        private IConfiguration Configuration { get; }
-
-        public Peek(object[] args)
+        public static async Task PeekMessageAsync(BaseCommandData insertCommandData)
         {
-            Configuration = new CommandArguments((string[])args).Configuration;
-        }
+            var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
-        public async Task ExecuteAsync(int i)
-        {
-            var commandData=ParseArgs();
-            if (commandData.Validate())
-            {
-                await QueuePeek.PeekMessageAsync(commandData);
-            }
-            else
-            {
-                PrintHelp();
-            }
-        }
+            // Create the queue client.
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-        private BaseCommandData ParseArgs()
-        {
+            // Retrieve a reference to a queue.
+            CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
 
-            return new BaseCommandData()
-            {
-                Queue = Configuration["Queue"]?? Configuration["q"],
-                StorageAccount = Configuration["Account"] ?? Configuration["a"],
-                StorageKey = Configuration["Key"] ?? Configuration["k"],
-            };
-        }
-
-        public void PrintHelp()
-        {
-            var executable = Assembly.GetExecutingAssembly().GetName().Name;
-            var help=
-$@"Peek: Peek first message in a queue. Message is not deleted nor hidden to other clients 
-
-    Usage: {executable} {nameof(Peek)}  --q=<queue> [--a=<account> -k=<key>]
-
-    If no storage account name and key are provided StorageEmulator will be used";
-            
-            Console.WriteLine(help);
+            // Peek
+            var peekedMessage = await queue.PeekMessageAsync();
+            Console.WriteLine(peekedMessage.AsString);
         }
     }
 }

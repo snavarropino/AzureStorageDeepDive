@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "99.Utils", "99.Utils", "{08
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageAuthenticatorHelper", "99.Utils\StorageAuthenticatorHelper\StorageAuthenticatorHelper.csproj", "{1A5F88AA-FB8B-4527-B483-F287120342BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Queue.Client", "2.Queue\Queue.Client\Queue.Client.csproj", "{F2E512B1-7CB5-4448-8D2B-92513A3C50BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Queue.Cli", "2.Queue\Queue.Client\Queue.Cli.csproj", "{F2E512B1-7CB5-4448-8D2B-92513A3C50BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CliUtils", "99.Utils\CliUtils\CliUtils.csproj", "{A3EC3D6D-B132-48A6-9892-0BAE11FB6E68}"
 EndProject
