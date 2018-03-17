@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace Queue.Client.Commands
 {
-    public class Insert : ICommand
+    public class Peek : ICommand
     {
         private IConfiguration Configuration { get; }
 
-        public Insert(object[] args)
+        public Peek(object[] args)
         {
             Configuration = new CommandArguments((string[])args).Configuration;
         }
@@ -20,8 +20,7 @@ namespace Queue.Client.Commands
             var commandData=ParseArgs();
             if (commandData.Validate())
             {
-                commandData.Message = $"{commandData.Message} {i}";
-                await QueueInsert.InsertMessageAsync(commandData);
+                await QueuePeek.PeekMessageAsync(commandData);
             }
             else
             {
@@ -29,13 +28,12 @@ namespace Queue.Client.Commands
             }
         }
 
-        private InsertCommandData ParseArgs()
+        private BaseCommandData ParseArgs()
         {
 
-            return new InsertCommandData()
+            return new BaseCommandData()
             {
                 Queue = Configuration["Queue"]?? Configuration["q"],
-                Message = Configuration["Message"] ?? Configuration["m"],
                 StorageAccount = Configuration["Account"] ?? Configuration["a"],
                 StorageKey = Configuration["Key"] ?? Configuration["k"],
             };
@@ -45,9 +43,9 @@ namespace Queue.Client.Commands
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Insert: Insert a message in a queue. 
+$@"Peek: Peek first message in a queue. Message is not deleted nor hidden to other clients 
 
-    Usage: {executable} {nameof(Insert)} --m='<mesage>' --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(Peek)}  --q=<queue> [--a=<account> -k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             

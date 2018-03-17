@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -23,6 +24,8 @@ namespace Queue.Client.Commands
             // Create a message and add it to the queue.
             CloudQueueMessage message = new CloudQueueMessage(insertCommandData.Message);
             await queue.AddMessageAsync(message);
+
+            Console.WriteLine($"Inserted: {insertCommandData.Message}");
         }
 
         private static CloudStorageAccount GetStorageAccount(InsertCommandData insertCommandData)
