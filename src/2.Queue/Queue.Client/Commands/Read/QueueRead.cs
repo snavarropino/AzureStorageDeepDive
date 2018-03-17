@@ -4,9 +4,9 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace Queue.Client.Commands
 {
-    internal static class QueuePeek
+    internal static class QueueRead
     {
-        public static async Task PeekMessageAsync(BaseCommandData insertCommandData)
+        public static async Task ReadMessageAsync(BaseCommandData insertCommandData)
         {
             var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
@@ -17,8 +17,8 @@ namespace Queue.Client.Commands
             CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
 
             // Peek
-            var peekedMessage = await queue.PeekMessageAsync();
-            Console.WriteLine(peekedMessage.AsString);
+            var retrievedMessage = await queue.GetMessageAsync();
+            Console.WriteLine($"Readed: {retrievedMessage.AsString}");
         }
     }
 }

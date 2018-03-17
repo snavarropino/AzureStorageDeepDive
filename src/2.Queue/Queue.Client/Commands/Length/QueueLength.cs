@@ -4,9 +4,9 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace Queue.Client.Commands
 {
-    internal static class QueuePeek
+    internal static class QueueLength
     {
-        public static async Task PeekMessageAsync(BaseCommandData insertCommandData)
+        public static async Task CountMessagesAsync(BaseCommandData insertCommandData)
         {
             var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
@@ -16,9 +16,12 @@ namespace Queue.Client.Commands
             // Retrieve a reference to a queue.
             CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
 
-            // Peek
-            var peekedMessage = await queue.PeekMessageAsync();
-            Console.WriteLine(peekedMessage.AsString);
+            
+            // Fetch
+            await queue.FetchAttributesAsync();
+
+            // Display number of messages.
+            Console.WriteLine($"Number of messages in queue: {queue.ApproximateMessageCount}");
         }
     }
 }
