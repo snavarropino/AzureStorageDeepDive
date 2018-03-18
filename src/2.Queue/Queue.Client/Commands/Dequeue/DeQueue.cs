@@ -6,15 +6,15 @@ namespace Queue.Cli.Commands.Dequeue
 {
     internal static class Dequeue
     {
-        public static async Task DeQueueMessageAsync(BaseCommandData insertCommandData)
+        public static async Task DeQueueMessageAsync(BaseCommandData commandData)
         {
-            var storageAccount = StorageAccountFactory.Get(insertCommandData);
+            var storageAccount = StorageAccountFactory.Get(commandData);
 
             // Create the queue client.
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             // Retrieve a reference to a queue.
-            CloudQueue queue = queueClient.GetQueueReference(insertCommandData.Queue);
+            CloudQueue queue = queueClient.GetQueueReference(commandData.Queue);
 
             // Read
             var retrievedMessage = await queue.GetMessageAsync();
