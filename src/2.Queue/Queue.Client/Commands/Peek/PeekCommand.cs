@@ -24,7 +24,7 @@ namespace Queue.Cli.Commands.Peek
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -39,17 +39,22 @@ namespace Queue.Cli.Commands.Peek
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
 $@"Peek: Peek first message in a queue. Message is not deleted nor hidden to other clients 
 
-    Usage: {executable} {nameof(PeekCommand)}  --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(PeekCommand)}  --q=<queue> [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "Peek first message in a queue";
         }
     }
 }

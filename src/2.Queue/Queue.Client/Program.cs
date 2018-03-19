@@ -20,7 +20,7 @@ namespace Queue.Cli
             }
             else
             {
-                PrintGeneralHelp();
+                Help.PrintGeneralHelp();
             }
         }
 
@@ -30,7 +30,7 @@ namespace Queue.Cli
 
             if (commandArguments.CommandHelpRequested)
             {
-                command.PrintHelp();
+                command.PrintFullCommandHelp();
             }
             else
             {
@@ -61,22 +61,6 @@ namespace Queue.Cli
 
             var command = Activator.CreateInstance(Type.GetType(commandtype), new object[] { commandArguments.Args });
             return command as ICommand;
-        }
-
-        private static void PrintGeneralHelp()
-        {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            Console.WriteLine($@"Usage: {assemblyName} command <arguments>
-
-Commands:
-
-    Insert: Insert a new message in the queue. Type {assemblyName} insert -h for further details
-
-Arguments (general):
-
-    --l=miliseconds: Execute an infinite loop, with a delay between each command execution
-
-");
         }
     }
 }

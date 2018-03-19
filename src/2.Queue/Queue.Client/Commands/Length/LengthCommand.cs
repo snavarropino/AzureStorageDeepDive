@@ -25,7 +25,7 @@ namespace Queue.Cli.Commands.Length
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -40,17 +40,22 @@ namespace Queue.Cli.Commands.Length
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Peek: Peek first message in a queue. Message is not deleted nor hidden to other clients 
+$@"Length: Get queue length. 
 
-    Usage: {executable} {nameof(PeekCommand)}  --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(LengthCommand)}  --q=<queue> [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "Get queue length";
         }
     }
 }

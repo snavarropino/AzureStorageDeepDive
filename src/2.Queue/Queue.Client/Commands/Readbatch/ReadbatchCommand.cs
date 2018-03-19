@@ -25,7 +25,7 @@ namespace Queue.Cli.Commands.Readbatch
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -39,17 +39,22 @@ namespace Queue.Cli.Commands.Readbatch
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Peek: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
+$@"Readbatch: read several messages in batch. Messages are hidden to other clients during 1 minute
 
-    Usage: {executable} {nameof(DequeueCommand)}  --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(ReadbatchCommand)}  --q=<queue> [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "Read several messages in batch";
         }
     }
 }

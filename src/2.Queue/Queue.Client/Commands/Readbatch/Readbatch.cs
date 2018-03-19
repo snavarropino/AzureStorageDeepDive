@@ -23,12 +23,12 @@ namespace Queue.Cli.Commands.Readbatch
             {
                 LocationMode = LocationMode.PrimaryThenSecondary,
                 RetryPolicy = new LinearRetry(),
-                MaximumExecutionTime = TimeSpan.FromSeconds(2),
-                ServerTimeout = TimeSpan.FromSeconds(3)
+                MaximumExecutionTime = TimeSpan.FromSeconds(5),
+                ServerTimeout = TimeSpan.FromSeconds(2)
             };
 
             // Read batch
-            var readed = await queue.GetMessagesAsync(5, TimeSpan.FromMinutes(5), options, new OperationContext());
+            var readed = await queue.GetMessagesAsync(5, TimeSpan.FromMinutes(1), options, new OperationContext());
 
             foreach (CloudQueueMessage retrievedMessage in readed)
             {

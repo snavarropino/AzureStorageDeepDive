@@ -30,7 +30,7 @@ namespace File.Cli.Commands.GetFileShares
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -65,17 +65,22 @@ namespace File.Cli.Commands.GetFileShares
                 StorageKey = Configuration["Key"] ?? Configuration["k"],
             };
         }
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help =
-                $@"GetFileShares: List file shares in an storage account
+$@"GetFileShares: List file shares in an storage account
 
-    Usage: {executable} {nameof(GetFileSharesCommand)}  [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(GetFileSharesCommand)}  [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
 
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "List file shares in an storage account";
         }
     }
 }

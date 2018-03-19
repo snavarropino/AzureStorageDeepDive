@@ -24,7 +24,7 @@ namespace Queue.Cli.Commands.Dequeue
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -39,17 +39,22 @@ namespace Queue.Cli.Commands.Dequeue
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Peek: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
+$@"Dequeue: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
 
-    Usage: {executable} {nameof(DequeueCommand)}  --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(DequeueCommand)}  --q=<queue> [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "DeQueue first message in a queue";
         }
     }
 }

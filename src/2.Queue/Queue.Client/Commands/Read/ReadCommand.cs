@@ -25,7 +25,7 @@ namespace Queue.Cli.Commands.Read
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -40,17 +40,22 @@ namespace Queue.Cli.Commands.Read
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Peek: DeQueue first message in a queue. Message is hidden to other clients during 30 seconds
+$@"Read: Read first message in a queue. Message is hidden to other clients during 30 seconds
 
-    Usage: {executable} {nameof(DequeueCommand)}  --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(ReadCommand)}  --q=<queue> [--a=<account> --k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "Read first message in a queue and hidden it for 30 seconds";
         }
     }
 }

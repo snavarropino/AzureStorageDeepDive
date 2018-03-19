@@ -30,7 +30,7 @@ namespace File.Cli.Commands.GetFoldersAndFiles
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -69,17 +69,22 @@ namespace File.Cli.Commands.GetFoldersAndFiles
                 Share = Configuration["Share"] ?? Configuration["s"]
             };
         }
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help =
-                $@"GetFoldersAndFiles: List folder and files in a share folder (not recursive)
+$@"GetFoldersAndFiles: List folder and files in a share folder (not recursive)
 
     Usage: {executable} {nameof(GetFoldersAndFilesCommand)}  [--a=<account> --k=<key> --s=<share>]
 
     Storage account name and key are mandatory as no emulator support is present";
 
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "List folder and files in a share folder";
         }
     }
 }

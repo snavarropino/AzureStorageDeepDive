@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace File.Cli
             }
             else
             {
-                PrintGeneralHelp();
+                Help.PrintGeneralHelp();
             }
         }
 
@@ -30,7 +31,7 @@ namespace File.Cli
 
             if (commandArguments.CommandHelpRequested)
             {
-                command.PrintHelp();
+                command.PrintFullCommandHelp();
             }
             else
             {
@@ -61,22 +62,6 @@ namespace File.Cli
 
             var command = Activator.CreateInstance(Type.GetType(commandtype), new object[] {commandArguments.Args});
             return command as ICommand;
-        }
-
-        private static void PrintGeneralHelp()
-        {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            Console.WriteLine($@"Usage: {assemblyName} command <arguments>
-
-Commands:
-
-    GetFileShares: List file shares in an storage account. Type {assemblyName} GetFileShares -h for further details
-
-Arguments (general):
-
-    --l=miliseconds: Execute an infinite loop, with a delay between each command execution
-
-");
         }
     }
 }

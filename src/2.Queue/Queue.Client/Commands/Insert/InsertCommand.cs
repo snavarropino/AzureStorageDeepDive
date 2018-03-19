@@ -25,7 +25,7 @@ namespace Queue.Cli.Commands.Insert
             }
             else
             {
-                PrintHelp();
+                PrintFullCommandHelp();
             }
         }
 
@@ -41,7 +41,7 @@ namespace Queue.Cli.Commands.Insert
             };
         }
 
-        public void PrintHelp()
+        public void PrintFullCommandHelp()
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
@@ -52,6 +52,11 @@ $@"Insert: Insert a message in a queue.
     If no storage account name and key are provided StorageEmulator will be used";
             
             Console.WriteLine(help);
+        }
+
+        public string GetShortCommandHelp()
+        {
+            return "Insert a message in a queue";
         }
     }
 }
