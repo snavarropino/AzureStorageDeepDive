@@ -40,9 +40,13 @@ namespace StorageAuthenticatorHelper
             // If you need any additional headers, add them here before creating
             //   the authorization header. 
 
-            // Add the authorization header.
-            httpRequestMessage.Headers.Authorization = StorageAuthenticationHelper.GetAuthorizationHeader(
+            // Add the authorization header (and log it)
+            var authHeader= StorageAuthenticationHelper.GetAuthorizationHeader(
                 StorageAccountName, StorageAccountKey, now, httpRequestMessage);
+            Console.WriteLine($"Authorization header: {authHeader}");
+            httpRequestMessage.Headers.Authorization = authHeader;
+
+            Console.WriteLine($"x-ms-date: {now.ToString("R", CultureInfo.InvariantCulture)}");
 
             return httpRequestMessage;
         }

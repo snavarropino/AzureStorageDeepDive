@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
@@ -53,8 +52,7 @@ namespace StorageAuthenticatorHelper
 
             // This is the actual header that will be added to the list of request headers.
             // You can stop the code here and look at the value of 'authHV' before it is returned.
-            AuthenticationHeaderValue authHv = new AuthenticationHeaderValue("SharedKey",
-                storageAccountName + ":" + Convert.ToBase64String(sha256.ComputeHash(signatureBytes)));
+            var authHv = new AuthenticationHeaderValue("SharedKey",storageAccountName + ":" + signature);
             return authHv;
         }
 
