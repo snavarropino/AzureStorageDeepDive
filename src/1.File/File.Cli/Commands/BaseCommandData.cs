@@ -7,8 +7,12 @@
 
         public virtual bool Validate()
         {
-            if(!string.IsNullOrWhiteSpace(StorageAccount) && string.IsNullOrWhiteSpace(StorageKey))
+            if (!string.IsNullOrWhiteSpace(StorageAccount) && string.IsNullOrWhiteSpace(StorageKey)
+                ||
+                string.IsNullOrWhiteSpace(StorageAccount) && !string.IsNullOrWhiteSpace(StorageKey))
+            {
                 return false;
+            }
 
             return true;
         }
