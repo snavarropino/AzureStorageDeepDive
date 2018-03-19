@@ -8,7 +8,7 @@ namespace CliUtils
         private readonly string[] _args;
         public string[] Args => _args;
         public string Command { get; }
-        public bool CommandHelpRequested => _args[0].IsHelp();
+        public bool CommandHelpRequested => Args.Length != 0 && _args[0].IsHelp();
 
         public int LoopInterval { get; private set; }
         public bool LoopRequested { get; private set; }
@@ -44,7 +44,6 @@ namespace CliUtils
             {
                 LoopInterval = 0;
             }
-
         }
     }
 }

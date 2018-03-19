@@ -6,14 +6,26 @@ namespace StorageAuthenticatorHelper
 {
     public class StorageRequestFactory
     {
-        public string StorageAccountName { get; }
-        public string StorageAccountKey { get; }
+        public string StorageAccountName { get; private set; }
+        public string StorageAccountKey { get; private set; }
 
         public StorageRequestFactory(string storageAccountName, string storageAccountKey)
         {
             StorageAccountName = storageAccountName;
             StorageAccountKey = storageAccountKey;
+
+            EnsureAccount();
         }
+
+        private void EnsureAccount()
+        {
+            if(string.IsNullOrWhiteSpace(StorageAccountName) || string.IsNullOrWhiteSpace(StorageAccountKey))
+            {
+                StorageAccountName = "devstoreaccount1";
+                StorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+            }
+        }
+
         public HttpRequestMessage CreateRequest(HttpMethod method, string uri, Byte[] requestPayload = null)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri)
