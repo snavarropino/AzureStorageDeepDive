@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace Queue.Cli.Commands.Insert
@@ -10,7 +8,7 @@ namespace Queue.Cli.Commands.Insert
     {
         public static async Task InsertMessageAsync(InsertCommandData insertCommandData)
         {
-            var storageAccount = GetStorageAccount(insertCommandData);
+            var storageAccount = StorageAccountFactory.Get(insertCommandData);
 
             // Create the queue client.
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
@@ -26,17 +24,6 @@ namespace Queue.Cli.Commands.Insert
             await queue.AddMessageAsync(message);
 
             Console.WriteLine($"Inserted: {insertCommandData.Message}");
-        }
-
-        private static CloudStorageAccount GetStorageAccount(InsertCommandData insertCommandData)
-        {
-            if (string.IsNullOrWhiteSpace(insertCommandData.StorageAccount))
-            {
-                return CloudStorageAccount.DevelopmentStorageAccount;
-            }
-
-            StorageCredentials storageCredentials = new StorageCredentials(insertCommandData.StorageAccount, insertCommandData.StorageKey);
-            return new CloudStorageAccount(storageCredentials, useHttps: true);
         }
     }
 }

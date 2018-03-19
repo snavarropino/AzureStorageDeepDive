@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CliUtils;
@@ -39,7 +38,7 @@ namespace Queue.Cli
                     await ExecuteLoop(command, commandArguments.LoopInterval);
                 }
 
-                await command.ExecuteAsync(9);
+                await command.ExecuteAsync(-1);
             }
         }
 

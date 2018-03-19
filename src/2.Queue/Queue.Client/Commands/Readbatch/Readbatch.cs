@@ -18,17 +18,8 @@ namespace Queue.Cli.Commands.Readbatch
             // Retrieve a reference to a queue.
             CloudQueue queue = queueClient.GetQueueReference(commandData.Queue);
 
-            
-            var options = new QueueRequestOptions()
-            {
-                LocationMode = LocationMode.PrimaryThenSecondary,
-                RetryPolicy = new LinearRetry(),
-                MaximumExecutionTime = TimeSpan.FromSeconds(5),
-                ServerTimeout = TimeSpan.FromSeconds(2)
-            };
-
             // Read batch
-            var readed = await queue.GetMessagesAsync(5, TimeSpan.FromMinutes(1), options, new OperationContext());
+            var readed = await queue.GetMessagesAsync(5, TimeSpan.FromMinutes(1), new QueueRequestOptions(), new OperationContext());
 
             foreach (CloudQueueMessage retrievedMessage in readed)
             {

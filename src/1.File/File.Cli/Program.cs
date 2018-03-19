@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CliUtils;
@@ -11,7 +9,7 @@ namespace File.Cli
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine($"Azure Storage Queue Client{Environment.NewLine}");
+            Console.WriteLine($"Azure Storage File Client{Environment.NewLine}");
 
             var commandArguments = args.BuildCommandArguments();
 

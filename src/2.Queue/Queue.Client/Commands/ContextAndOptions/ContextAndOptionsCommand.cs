@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using CliUtils;
 using Microsoft.Extensions.Configuration;
+using Queue.Cli.Commands.Insert;
 
-namespace Queue.Cli.Commands.Insert
+namespace Queue.Cli.Commands.ContextAndOptions
 {
-    public class InsertCommand : ICommand
+    public class ContextAndOptionsCommand : ICommand
     {
         private IConfiguration Configuration { get; }
 
-        public InsertCommand(object[] args)
+        public ContextAndOptionsCommand(object[] args)
         {
             Configuration = new CommandArguments((string[])args).Configuration;
         }
@@ -22,7 +24,12 @@ namespace Queue.Cli.Commands.Insert
             {
                 var index = (i > 0) ? i.ToString() : string.Empty;
                 commandData.Message = $"{commandData.Message} {index}";
-                await Insert.InsertMessageAsync(commandData);
+                var contextAndOptions = new ContextAndOptions();
+                await contextAndOptions.InsertMessageAsync(commandData);
+                Thread.Sleep(2000);
+                await contextAndOptions.DeQueueMessageAsync(commandData);
+
+                Console.WriteLine($"Context: {contextAndOptions.Context.ClientRequestID}, StartTime: {contextAndOptions.Context.StartTime}, {contextAndOptions.Context.EndTime}");
             }
             else
             {
@@ -46,9 +53,9 @@ namespace Queue.Cli.Commands.Insert
         {
             var executable = Assembly.GetExecutingAssembly().GetName().Name;
             var help=
-$@"Insert: Insert a message in a queue. 
+$@"ContextAndOptions: Insert a message in a queue and dequeue it, using options and an operation context. 
 
-    Usage: {executable} {nameof(InsertCommand)} --m='<mesage>' --q=<queue> [--a=<account> -k=<key>]
+    Usage: {executable} {nameof(ContextAndOptions)} --m='<mesage>' --q=<queue> [--a=<account> -k=<key>]
 
     If no storage account name and key are provided StorageEmulator will be used";
             
@@ -57,7 +64,7 @@ $@"Insert: Insert a message in a queue.
 
         public string GetShortCommandHelp()
         {
-            return "Insert a message in a queue";
+            return "Insert a message in a queue and dequeue it, using options and an operation context";
         }
     }
 }
