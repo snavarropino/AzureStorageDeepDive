@@ -18,7 +18,16 @@ namespace Queue.Cli.Commands.Peek
 
             // Peek
             var peekedMessage = await queue.PeekMessageAsync();
-            Console.WriteLine(peekedMessage.AsString);
+
+            if (peekedMessage != null)
+            {
+                Console.WriteLine(peekedMessage.AsString);
+            }
+            else
+            {
+                Console.WriteLine("No messages on queue");
+
+            }
         }
     }
 }

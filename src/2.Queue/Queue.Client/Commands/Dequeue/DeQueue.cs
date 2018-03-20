@@ -18,12 +18,20 @@ namespace Queue.Cli.Commands.Dequeue
 
             // Read
             var retrievedMessage = await queue.GetMessageAsync();
-            Console.WriteLine($"Readed: {retrievedMessage.AsString}");
-            
-            //Do stuff...
 
-            await queue.DeleteMessageAsync(retrievedMessage);
-            Console.WriteLine($"Deleted: {retrievedMessage.AsString}");
+            if (retrievedMessage != null)
+            {
+                Console.WriteLine($"Readed: {retrievedMessage.AsString}");
+
+                //Do stuff...
+
+                await queue.DeleteMessageAsync(retrievedMessage);
+                Console.WriteLine($"Deleted: {retrievedMessage.AsString}");
+            }
+            else
+            {
+                Console.WriteLine("No messages on queue");
+            }
         }
     }
 }

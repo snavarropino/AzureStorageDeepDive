@@ -18,15 +18,24 @@ namespace Queue.Cli.Commands.Update
 
             // Get
             var retrievedMessage = await queue.GetMessageAsync();
-            Console.WriteLine($"Readed: {retrievedMessage.AsString}");
+            if (retrievedMessage != null)
+            {
+                Console.WriteLine($"Readed: {retrievedMessage.AsString}");
 
             //Update with new text
             retrievedMessage.SetMessageContent(updateCommandData.UpdateMessage);
-            await queue.UpdateMessageAsync(retrievedMessage,
-                TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
-                MessageUpdateFields.Content | MessageUpdateFields.Visibility);
 
-            Console.WriteLine($"Updated: {retrievedMessage.AsString}");
+
+                await queue.UpdateMessageAsync(retrievedMessage,
+                    TimeSpan.FromSeconds(60.0), // Make it invisible for another 60 seconds.
+                    MessageUpdateFields.Content | MessageUpdateFields.Visibility);
+
+                Console.WriteLine($"Updated: {retrievedMessage.AsString}");
+            }
+            else
+            {
+                Console.WriteLine("No messages on queue");
+            }
         }
     }
 }

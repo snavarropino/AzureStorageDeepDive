@@ -20,7 +20,14 @@ namespace Queue.Cli.Commands.Read
             // If message is deleted it will come back visible (as is it would be queued again). 
             // In this case message DequeueCount property is inreased by 1
             var retrievedMessage = await queue.GetMessageAsync();
-            Console.WriteLine($"Readed: {retrievedMessage.AsString}");
+            if (retrievedMessage != null)
+            {
+                Console.WriteLine($"Readed: {retrievedMessage.AsString}");
+            }
+            else
+            {
+                Console.WriteLine("No messages on queue");
+            }
         }
     }
 }
